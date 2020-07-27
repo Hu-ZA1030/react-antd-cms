@@ -1,6 +1,8 @@
 import axios from "axios"
 
-let baseURL = "http://localhost:8888/api/v1" //本地服务器
+let baseURL = "http://localhost:8888/" // 开发环境
+// let baseURL = "http://XXXXXXXX:9898"  // 测试环境
+// let baseUrl = "http://yyyyyyyy:7777"  // 生产环境
 
 const fetch = axios.create({
     baseURL: baseURL,
@@ -24,14 +26,26 @@ fetch.interceptors.request.use((config)=> {
 fetch.interceptors.response.use((response)=> {
     // 请求成功
     console.log("响应拦截",response)
-
-    // 对数据进行过滤，根据后端返回标识符来进行判断请求成功
-    if(response.data && response.data.success){
-        //将数据返回出去
-        return response.data.data
+    //根据后端返回的状态，我们打印不同的结果
+    const code = response.data.err
+    const message = response.data.message
+    console.log("code",code)
+    // 数据处理
+    if(code ===  0 ){
+      // console.log("响应",response.data.data)
+      return response.data.data
+    } else if(code ===  1){
+      message.error("缺少必填参数")
+    } else if(code === -1){
+      message.error("token 无效")
+    }else if( code === 2){
+      message.error(response.data.message)
+    } else if(response && response.data.success){
+      return response.data.data
     }else{
-        console.log("网络开小差，请稍后再试")
+      console.log("");
     }
+
   },(error)=> {
     //   请求失败
     return Promise.reject(error);

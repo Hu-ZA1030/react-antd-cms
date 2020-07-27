@@ -1,0 +1,22 @@
+.login{
+    width: 100%;
+    height: 100%;
+    background: #333333;
+
+    .ant-form{
+        width: 500px;
+        padding-top:150px;
+        margin: auto;
+    }
+    .ant-form-item-required{
+        color: wheat;
+    }
+    .ant-checkbox-wrapper>span:nth-child(2){
+        color: #fff;
+    }
+    .ant-btn-primary{
+        width: 335px;
+        font-size: 16px;
+        line-height: 16px;
+    }
+}

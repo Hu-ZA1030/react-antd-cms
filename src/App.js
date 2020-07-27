@@ -1,64 +1,51 @@
 import React from 'react';
 import '@/assets/style/common.scss'
-import {getCnodeList} from "./utils/api"
+import zhCN from 'antd/es/locale/zh_CN'
+import {ConfigProvider} from "antd"
+
+// antd的样式
+import 'antd/dist/antd.css'
+import {Layout,Login} from "@/components"
 
 // 路由
-import {HashRouter,Route,Switch,Redirect} from "react-router-dom"
-// 将我们抛出的路由数组引入
-import routes from "@/views"
+import {HashRouter} from "react-router-dom"
 
+
+
+// 状态管理
+import {Provider } from "react-redux"
+import store from "@/store"
+
+// 无状态组件
 export default class App extends React.Component{
     constructor(props){
       super(props)
       this.state={
-        list:[]
+        // 页面渲染成功，先获取token
+        token:localStorage.getItem("token")
       }
     }
-    // 生命周期函数，调用接口
-    componentDidMount(){
-      let params ={
-        tab:"",
-        page:1,
-        limit:5
-      }
-      getCnodeList(params).then(res=>{
-        console.log("res",res)
+  
+    loginHandle(){
+      this.setState({
+        token:localStorage.getItem("token")
       })
     }
-    // 生成视图容器
-    createRoutes(){ 
-      let res = []
-      routes.map(ele=>{
-        res.push(
-          <Route
-            exact
-            path={ele.path}
-            component={ele.component}
-            key={ele.id}>
-          </Route>
-        )
-        if(ele.children){
-          ele.children(ele=>{
-            res.push(
-              <Route
-                exact
-                path={ele.path}
-                component={ele.component}
-                key={ele.id}>
-              </Route>
-            )
-          })
-        }
-      })
-    }
+
     render(){
+      let {token} = this.state
       return(
         <HashRouter>
-            <div className="app">
-                <Switch>
-                  
-                </Switch>
-            </div>
+          <ConfigProvider locale={zhCN}>
+            <Provider store={store}>
+                <div className="app">
+                  {/*通过判断token来切换组件，若不存在token就显示Login组件，有就是首页*/}
+                  {
+                    token ? <Layout/> : <Login onLogin={this.loginHandle.bind(this)}/>
+                  }
+                </div>
+            </Provider>
+          </ConfigProvider>
         </HashRouter>
       )
     }
